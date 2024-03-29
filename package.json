@@ -1,0 +1,31 @@
+{
+    "name": "commit-sniffer",
+    "version": "1.0.0",
+    "private": true,
+    "description": "CS453 Project",
+    "author": "Group 1A",
+    "license": "ISC",
+    "homepage": "https://github.com//",
+    "keywords": [
+        "probot",
+        "github",
+        "probot-app"
+    ],
+    "scripts": {
+        "start": "probot run ./index.js",
+        "dev": "nodemon --exec npm start",
+        "test": "node --test"
+    },
+    "dependencies": {
+        "probot": "^13.0.1"
+    },
+    "devDependencies": {
+        "nock": "^14.0.0-beta.5",
+        "nodemon": "^3.1.0",
+        "smee-client": "^2.0.0"
+    },
+    "engines": {
+        "node": ">= 18"
+    },
+    "type": "module"
+}
