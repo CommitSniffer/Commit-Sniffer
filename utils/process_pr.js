@@ -1,5 +1,5 @@
 import { sendContentRequest, sendFileRequest } from "../request/request.js";
-import { getMethodLengths } from "./max_length.js";
+import { checkMethodLengths } from "./max_length.js";
 
 async function processArrayItems(fileData) {
     try {
@@ -19,39 +19,33 @@ function contentToString(content) {
 
 export function process_pr(context) {
     // Get updated files in the current PR
-
-    const result = sendFileRequest(
+    return sendFileRequest(
         context.payload.repository.owner.login,
         context.payload.repository.name,
         context.payload.number
-    );
-
-    // Get contents of the each updated file
-    result
+    )
         .then((data) => {
             console.log("File request is successful");
-            const fileContents = processArrayItems(data);
-
-            fileContents
-                .then((data) => {
-                    console.log("File contents are fetched successfuly");
-                    const contentString = data.map((file) =>
-                        contentToString(file.content)
-                    );
-                    check_pr_content(contentString);
-                })
-                .catch((error) => {
-                    console.error("Error1:", error);
-                });
+            return processArrayItems(data);
+        })
+        .then((fileContents) => {
+            console.log("File contents are fetched successfuly");
+            const contentStrings = fileContents.map((file) =>
+                contentToString(file.content)
+            );
+            return check_pr_content(contentStrings);
         })
         .catch((error) => {
-            console.error("Error2:", error);
+            console.error("Error:", error);
         });
 }
 
 function check_pr_content(contents) {
+    const results = [];
     contents.forEach((file) => {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
-        console.log(getMethodLengths(file));
+        results.push(checkMethodLengths(file));
     });
+
+    return results;
 }

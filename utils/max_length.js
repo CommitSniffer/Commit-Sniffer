@@ -46,7 +46,37 @@ public class Example {
 
     }
 }`;
-export function getMethodLengths(fileContent = javaCode) {
+
+export function checkMethodLengths(fileContent = javaCode) {
+    let result = getMethodLengths(fileContent);
+    const msg = [];
+
+    // if a method has an excessive length, find its starting line
+    result.forEach((method) => {
+        if (method.length > MAX_FCN_LENGTH) {
+            msg.push(
+                `Method ${method.methodSign} starting at line ${findMethodLine(
+                    fileContent,
+                    method.methodSign
+                )} exceeds max method legth constraint since its length is ${
+                    method.length
+                }`
+            );
+        }
+    });
+
+    return msg;
+}
+
+function findMethodLine(file, methodSign) {
+    return file
+        .split("\n")
+        .map((line, index) => ({ line: index + 1, content: line }))
+        .filter(({ content }) => content.includes(methodSign))
+        .map(({ line }) => line);
+}
+
+function getMethodLengths(fileContent = javaCode) {
     // TODO what if there are new lines between method tokens
 
     // Create a stack to match opening and closing braces
@@ -63,6 +93,7 @@ export function getMethodLengths(fileContent = javaCode) {
 
     let currentMethodLength = 0;
     let currentMethodName = "";
+    let currentMethodSign = "";
     let methodNameMatch = "";
 
     fileContent = removeCommentsAndEmptyLines(fileContent);
@@ -78,6 +109,7 @@ export function getMethodLengths(fileContent = javaCode) {
             if (methodDetected) {
                 methodLengths.push({
                     methodName: currentMethodName,
+                    methodSign: currentMethodSign,
                     length: currentMethodLength,
                 });
             }
@@ -87,6 +119,7 @@ export function getMethodLengths(fileContent = javaCode) {
             methodDetected = true;
 
             currentMethodName = methodNameMatch[2];
+            currentMethodSign = methodNameMatch[0].replace("{", "").trim();
         }
 
         // If inside a method, increment the line count
@@ -138,12 +171,14 @@ export function getMethodLengths(fileContent = javaCode) {
             // Store the length of the current method
             methodLengths.push({
                 methodName: currentMethodName,
+                methodSign: currentMethodSign,
                 length: currentMethodLength,
             });
 
             // Reset variables
             currentMethodLength = 0;
             currentMethodName = "";
+            currentMethodSign = "";
             insideMethod = false;
             methodDetected = false;
         }
