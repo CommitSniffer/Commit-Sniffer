@@ -18,11 +18,9 @@ export async function sendFileRequest(owner, repo, pull_number) {
             },
         });
 
-        // Handle the response here
-        // console.log("response", response.data); // Output the response data
         return response.data;
     } catch (error) {
-        console.error("Error occurred while fetching pull request:", error);
+        console.error("Error occurred while fetching files:", error);
     }
 }
 
@@ -34,10 +32,8 @@ export async function sendContentRequest(url) {
             },
         });
 
-        // Handle the response here
-        // console.log("response", response.data); // Output the response data
         return response.data;
     } catch (error) {
-        console.error("Error occurred while fetching pull request:", error);
+        console.error("Error occurred while fetching file content:", error);
     }
 }

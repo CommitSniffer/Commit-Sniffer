@@ -6,10 +6,10 @@ import { process_pr } from "./utils/process_pr.js";
  * @param {import('probot').Probot} app
  */
 export default (app) => {
+    // Load configs
     const config = new Config();
-    // Your code here
-    app.log.info("Yay, the app was loaded!");
-    getMethodLengths();
+
+    app.log.info("CommitSniffer is loaded!");
 
     app.on("issues.opened", async (context) => {
         const issueComment = context.issue({
@@ -20,21 +20,17 @@ export default (app) => {
         return context.octokit.issues.createComment(issueComment);
     });
 
-    app.on(
-        [
-            "pull_request.opened",
-            "pull_request.edited",
-            "pull_request.synchronise",
-        ],
-        async (context) => {
-            const issueComment = context.issue({
-                body: "Thanks for opening this PR!",
-            });
+    app.on(["pull_request.opened", "pull_request.edited"], async (context) => {
+        // Process PR and check for code smells
+        process_pr(context);
 
-            process_pr(context);
-            return context.octokit.issues.createComment(issueComment);
-        }
-    );
+        // Create a comment
+        const prComment = context.issue({
+            body: "Thanks for opening this PR!",
+        });
+
+        return context.octokit.issues.createComment(prComment);
+    });
 
     // For more information on building apps:
     // https://probot.github.io/docs/
