@@ -1,96 +1,169 @@
 import { MAX_FCN_LENGTH } from "../const/const.js";
-
+import { Stack } from "./stack.js";
 const javaCode = `
 public class Example {
     public void method1() {
         // Code here
-    }
-
-    private int method2(int param) {
-        // Code here
-        return param * 2;
 
         for (var) {
-          int++;
+            var++;
+            if (amogus) {
+                amogus
+            }
+
+            do {
+                aa++
+            } while (false)
         }
     }
 
-    protected void method3() {
-        // Code here
+    private int method2(int param)
 
+
+    {
+        /*
+        hola
+        come
+        estas
+        */
+        // Code here
+        return param * 2;
+    }
+
+    protected void method3() { int++;
+        // Code here
+        /**  
+        * 
+        *We can use various tags to depict the parameter 
+        *or heading or author name 
+        *We can also use HTML tags   
+        * 
+        */    
+    int = 1}
+
+    protected void method4() { }
+    protected void method5() { 
 
     }
 }`;
+export function getMethodLengths(fileContent = javaCode) {
+    // TODO what if there are new lines between method tokens
 
-const methodRegex =
-    /function\s*(\w*)\s*\([^)]*\)\s*\{([\s\S]*?)\}|(\((\w*)\)\s*=>\s*\{([\s\S]*?)\})/g;
-const lineRegex = /\r?\n/g;
+    // Create a stack to match opening and closing braces
+    const stack = new Stack();
+    const methodStartRegex =
+        /(public|private|protected)\s+\w+\s+(\w+)\([^)]*\)\s*\{?/;
 
-export function checkMaxMethodLength(
-    commit = text,
-    maxLength = MAX_FCN_LENGTH
-) {
-    let match;
-    while ((match = methodRegex.exec(text)) !== null) {
-        const methodName = match[1] || match[4]; // For regular functions or arrow functions
-        const methodContent = match[2] || match[5]; // For regular functions or arrow functions
+    // Initialize variables to store method lengths
+    const methodLengths = [];
 
-        // Find the index of the opening brace of the method
-        const openingBraceIndex = match.index + match[0].indexOf("{") + 1;
+    let insideMethod = false;
+    let methodDetected = false;
+    let isFirstOpening = false;
 
-        // Calculate the length of the method content by finding the matching closing brace
-        let closingBraceIndex = openingBraceIndex;
-        let braceCount = 1;
-        while (braceCount > 0 && closingBraceIndex < text.length) {
-            const char = text[closingBraceIndex++];
-            if (char === "{") {
-                braceCount++;
-            } else if (char === "}") {
-                braceCount--;
+    let currentMethodLength = 0;
+    let currentMethodName = "";
+    let methodNameMatch = "";
+
+    fileContent = removeCommentsAndEmptyLines(fileContent);
+
+    // Split the Java code into lines
+    const lines = fileContent.split("\n");
+
+    // Iterate through each line of the Java code
+    for (const line of lines) {
+        if ((methodNameMatch = line.trim().match(methodStartRegex))) {
+            // Check if this line starts a method
+            // If already inside a method, store the length of the previous method ???? TODO is this possible
+            if (methodDetected) {
+                methodLengths.push({
+                    methodName: currentMethodName,
+                    length: currentMethodLength,
+                });
+            }
+
+            // Start counting lines for the new method
+            currentMethodLength = 0;
+            methodDetected = true;
+
+            currentMethodName = methodNameMatch[2];
+        }
+
+        // If inside a method, increment the line count
+        if (methodDetected) {
+            isFirstOpening = !insideMethod;
+            insideMethod = true;
+
+            // If current line includes curly braces, update the stack
+            if (line.includes("{")) {
+                stack.push("{");
+            }
+
+            // if current line is inside the method (meaning that it is between the enclosing braces), increase current method length
+            if (insideMethod) {
+                let isIncrease = true;
+
+                if (isFirstOpening) {
+                    const afterOpen = line
+                        .substring(line.indexOf("{") + 1)
+                        .trim();
+
+                    // if this line includes the first opening braces and right side of the brace is empty
+                    // or a closing brace (which means that method body is empty),
+                    // do not increase line count
+                    if (afterOpen == "" || afterOpen.startsWith("}")) {
+                        isIncrease = false;
+                    }
+                }
+
+                if (isIncrease) {
+                    currentMethodLength++;
+                }
+            }
+
+            if (line.includes("}")) {
+                stack.pop();
             }
         }
-        const methodLength = closingBraceIndex - openingBraceIndex - 1; // Subtract 1 to exclude the closing brace
 
-        // Split method content into lines and log each line
-        const lines = methodContent.split("\n");
-        console.log(`Method: ${methodName}, Length: ${methodLength}`);
-        console.log("Method content:");
-        lines.forEach((line, index) => console.log(`${index + 1}: ${line}`));
-        console.log("--------------------------");
+        // If method ends in the current line, save length data
+        if (insideMethod && stack.isEmpty()) {
+            const beforeClose = line.replace("}", "").trim();
+
+            // If closing brace is solo in its line, do not include it in the counting
+            if (beforeClose == "") {
+                currentMethodLength--;
+            }
+
+            // Store the length of the current method
+            methodLengths.push({
+                methodName: currentMethodName,
+                length: currentMethodLength,
+            });
+
+            // Reset variables
+            currentMethodLength = 0;
+            currentMethodName = "";
+            insideMethod = false;
+            methodDetected = false;
+        }
     }
+
+    return methodLengths;
 }
 
-export function getMethodLengths(text = javaCode) {
-    // Split the Java code into individual methods
-    const methods = text.match(
-        /(public|private|protected)\s+\w+\s+\w+\([^)]*\)\s*\{[^{}]*\}/g
-    );
+function removeCommentsAndEmptyLines(fileContent) {
+    // Remove single-line comments
+    fileContent = fileContent.replace(/\/\/.*$/gm, "");
 
-    if (!methods) {
-        console.log("No methods found in the provided Java code.");
-        return;
-    }
+    // Remove multi-line comments
+    fileContent = fileContent.replace(/\/\*[\s\S]*?\*\//g, "");
 
-    const methodLengths = methods.map((method) => {
-        const methodNameMatch = method.match(
-            /(public|private|protected)\s+\w+\s+(\w+)\([^)]*\)\s*\{/
-        );
-        const methodName = methodNameMatch[2];
+    // Remove Javadoc comments
+    fileContent = fileContent.replace(/\/\*\*[\s\S]*?\*\//g, "");
 
-        // Count the number of lines in each method
-        const lines = method.split("\n");
-        // .filter((line) => line.trim() !== "");
+    // Remove empty lines
+    fileContent = fileContent.replace(/^\s*[\r\n]/gm, "");
 
-        const length = lines.length;
-
-        // Log method name and length
-        console.log(`Method: ${methodName}, Length: ${length}`);
-        console.log(lines);
-        console.log("--------");
-
-        return { methodName, length };
-    });
-
-    console.log(methodLengths);
-    return methodLengths;
+    return fileContent;
 }

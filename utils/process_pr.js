@@ -14,7 +14,6 @@ async function processArrayItems(fileData) {
 }
 
 function contentToString(content) {
-    console.log(Buffer.from(content, "base64").toString("utf-8"));
     return Buffer.from(content, "base64").toString("utf-8");
 }
 
@@ -52,8 +51,7 @@ export function process_pr(context) {
 
 function check_pr_content(contents) {
     contents.forEach((file) => {
-        console.log(file);
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
-        getMethodLengths(file);
+        console.log(getMethodLengths(file));
     });
 }

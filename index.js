@@ -11,12 +11,13 @@ export default (app) => {
 
     app.log.info("CommitSniffer is loaded!");
 
+    console.log(getMethodLengths());
+
     app.on("issues.opened", async (context) => {
         const issueComment = context.issue({
             body: "Thanks for opening this issue!",
         });
 
-        getMethodLengths();
         return context.octokit.issues.createComment(issueComment);
     });
 
