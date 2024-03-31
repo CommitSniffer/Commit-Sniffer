@@ -1,5 +1,4 @@
 import { Config } from "./const/config.js";
-import { getMethodLengths } from "./utils/max_length.js";
 import { process_pr } from "./utils/process_pr.js";
 /**
  * This is the main entrypoint to your Probot app
@@ -11,27 +10,51 @@ export default (app) => {
 
     app.log.info("CommitSniffer is loaded!");
 
-    console.log(getMethodLengths());
+    // console.log(getMethodLengths());
 
     app.on("issues.opened", async (context) => {
         const issueComment = context.issue({
             body: "Thanks for opening this issue!",
         });
 
-        return context.octokit.issues.createComment(issueComment);
+        createComment(context, "slm");
+        return;
     });
 
     app.on(["pull_request.opened", "pull_request.edited"], async (context) => {
         // Process PR and check for code smells
-        process_pr(context);
+        process_pr(context)
+            .then((result) => {
+                // Create a comment TODO this part should be updated so that it becomes compatible with other fearutes
+                result.forEach((msgGroup) => {
+                    if (msgGroup.length == 0) {
+                        return;
+                    }
 
-        // Create a comment
-        const prComment = context.issue({
-            body: "Thanks for opening this PR!",
-        });
+                    let msg = msgGroup;
+                    if (Array.isArray(msgGroup)) {
+                        msg = msgGroup.join("\n");
+                    } else {
+                    }
 
-        return context.octokit.issues.createComment(prComment);
+                    createComment(context, msg);
+                });
+            })
+            .catch((error) => {
+                console.error("Error processing PR:", error);
+                const prComment = context.issue({
+                    body: "We cannot process your PR right now :(\nPlease try again later.",
+                });
+                return context.octokit.issues.createComment(prComment);
+            });
     });
+
+    function createComment(context, msg) {
+        const comment = context.issue({
+            body: msg,
+        });
+        return context.octokit.issues.createComment(comment);
+    }
 
     // For more information on building apps:
     // https://probot.github.io/docs/
