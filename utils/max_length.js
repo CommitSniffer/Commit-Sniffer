@@ -1,23 +1,26 @@
 import { MAX_FCN_LENGTH } from "../const/const.js";
 
-const text = `
-function example() {
-  // Method content
-  for (let i = 0; i < 5; i++) {
-    // Inside loop
-  }
-  if (true) {
-    // Inside conditional
-  }
-}
+const javaCode = `
+public class Example {
+    public void method1() {
+        // Code here
+    }
 
-const anotherMethod = () => {
-  // Another method content
-  while (true) {
-    // Inside another loop
-  }
-};
-`;
+    private int method2(int param) {
+        // Code here
+        return param * 2;
+
+        for (var) {
+          int++;
+        }
+    }
+
+    protected void method3() {
+        // Code here
+
+
+    }
+}`;
 
 const methodRegex =
     /function\s*(\w*)\s*\([^)]*\)\s*\{([\s\S]*?)\}|(\((\w*)\)\s*=>\s*\{([\s\S]*?)\})/g;
@@ -55,4 +58,39 @@ export function checkMaxMethodLength(
         lines.forEach((line, index) => console.log(`${index + 1}: ${line}`));
         console.log("--------------------------");
     }
+}
+
+export function getMethodLengths(text = javaCode) {
+    // Split the Java code into individual methods
+    const methods = text.match(
+        /(public|private|protected)\s+\w+\s+\w+\([^)]*\)\s*\{[^{}]*\}/g
+    );
+
+    if (!methods) {
+        console.log("No methods found in the provided Java code.");
+        return;
+    }
+
+    const methodLengths = methods.map((method) => {
+        const methodNameMatch = method.match(
+            /(public|private|protected)\s+\w+\s+(\w+)\([^)]*\)\s*\{/
+        );
+        const methodName = methodNameMatch[2];
+
+        // Count the number of lines in each method
+        const lines = method.split("\n");
+        // .filter((line) => line.trim() !== "");
+
+        const length = lines.length;
+
+        // Log method name and length
+        console.log(`Method: ${methodName}, Length: ${length}`);
+        console.log(lines);
+        console.log("--------");
+
+        return { methodName, length };
+    });
+
+    console.log(methodLengths);
+    return methodLengths;
 }
