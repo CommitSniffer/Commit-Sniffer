@@ -35,7 +35,7 @@ export function checkImports(fileContent, filePath) {
 
     const unusedImports = Object.keys(importUsage).filter(key => !importUsage[key]);
     return unusedImports.map(unused => {
-       return `The import ${unused} is never used in file ${filePath} on line ${getLineOfImport(allLines, unused)}`;
+       return `The import \`${unused}\` is never used in file \`${filePath}\` on \`line ${getLineOfImport(allLines, unused)}\``;
     });
 }
 
