@@ -1,5 +1,5 @@
 import { sendContentRequest, sendFileRequest } from "../request/request.js";
-import { getMethodLengths } from "./max_length.js";
+import { getMethodLengths, getIncorrectNamingConventions } from "./max_length.js";
 
 async function processArrayItems(fileData) {
     try {
@@ -55,5 +55,6 @@ function check_pr_content(contents) {
         console.log(file);
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
         getMethodLengths(file);
+        getIncorrectNamingConventions(file);
     });
 }

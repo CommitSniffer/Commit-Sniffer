@@ -62,6 +62,7 @@ export function checkMaxMethodLength(
 
 export function getMethodLengths(text = javaCode) {
     // Split the Java code into individual methods
+
     const methods = text.match(
         /(public|private|protected)\s+\w+\s+\w+\([^)]*\)\s*\{[^{}]*\}/g
     );
