@@ -1,4 +1,4 @@
-export function checkImports(fileContent, filePath) {
+export function checkUnusedImports(fileContent, filePath) {
     const importRegex = /^import\s+([\w\.]+);/gm;
     const allLines = fileContent.split("\n");
     const importLines = [];
