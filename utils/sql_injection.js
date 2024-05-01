@@ -1,4 +1,4 @@
-export async function checkUnnecessaryNesting(fileContent, filePath) {
+export async function checkSqlInjection(fileContent, filePath) {
   // Prepare the prompt for the LLM
   const prompt = 
       `Take a deep breath and focus on the task.

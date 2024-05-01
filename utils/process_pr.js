@@ -6,6 +6,7 @@ import {
 import { checkMethodLengths } from "./max_length.js";
 import { createReviewObj } from "./review_object.js";
 import { checkUnnecessaryNesting } from "./nesting.js";
+import { checkSqlInjection } from "./sql_injection.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkIncorrectNamingConventions } from "./naming.js";
 import { checkWildcardImports } from "./wildcard_import.js";
@@ -84,6 +85,7 @@ function check_pr_content(files) {
 
         // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
         results.push(checkUnnecessaryNesting(file.contentString, file.path));
+        results.push(checkSqlInjection(file.contentString, file.path));
         results.push(checkCommentSmells(file.contentString));
     });
 
