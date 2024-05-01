@@ -2,6 +2,7 @@ import { sendContentRequest, sendFileRequest } from "../request/request.js";
 import { checkMethodLengths } from "./max_length.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkWildcardImports } from "./wildcard_import.js";
+import { checkCommentSmells } from "./gemini_api.js";
 
 async function processArrayItems(fileData) {
     try {
@@ -53,6 +54,7 @@ function check_pr_content(files) {
         results.push(checkMethodLengths(file.contentString));
         results.push(checkUnusedImports(file.contentString, file.path));
         results.push(checkWildcardImports(file.contentString, file.path));
+        results.push(checkCommentSmells(file.contentString));
     });
 
     return results;
