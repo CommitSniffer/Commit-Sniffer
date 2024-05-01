@@ -2,7 +2,7 @@ import { sendContentRequest, sendFileRequest } from "../request/request.js";
 import { checkMethodLengths } from "./max_length.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkWildcardImports } from "./wildcard_import.js";
-import { checkCommentSmells } from "./gemini_api.js";
+import { checkCommentSmells } from "./comment_smell.js";
 
 async function processArrayItems(fileData) {
     try {
