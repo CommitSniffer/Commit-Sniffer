@@ -44,16 +44,27 @@ export function checkUnusedVariables(fileContent, filePath) {
     }
   });
 
+  let unusedVarLines = [];
+
   // Return a message with unused variables or stating that all are used
   if (unusedVariables.length > 0 || unusedClasses.length > 0) {
+    unusedVarLines.push(`Unused variables in \`${filePath}\`:`);
     if (unusedVariables.length > 0) {
-      return `Unused variables in \`${filePath}\`: ${unusedVariables.join(', ')}`;
+      unusedVariables.forEach(unusedVariable => {
+        let errorTextLine = `\- \`${unusedVariable}\` at \`line ${fileContent.split('\n').findIndex(line => line.includes(unusedVariable)) + 1}\``;
+        unusedVarLines.push(errorTextLine);
+      });
     }
     if (unusedClasses.length > 0) {
-      return `Unused class variables in \`${filePath}\`: ${unusedClasses.join(', ')}`;
+      unusedClasses.forEach(unusedClass => {
+        let errorTextLine = `\- \`${unusedClass}\` at \`line ${fileContent.split('\n').findIndex(line => line.includes(unusedClass)) + 1}\``;
+        unusedVarLines.push(errorTextLine);
+      });
     }
   }
   else {
     return [];
   }
+
+  return unusedVarLines;
 }
