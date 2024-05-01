@@ -1,1 +1,1 @@
-export const MAX_FCN_LENGTH = 100;
+export const MAX_FCN_LENGTH = 5;

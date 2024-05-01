@@ -1,5 +1,7 @@
 import { sendContentRequest, sendFileRequest } from "../request/request.js";
-import { getMethodLengths } from "./max_length.js";
+import { checkMethodLengths } from "./max_length.js";
+import { checkUnusedImports } from "./unused_import.js";
+import { checkWildcardImports } from "./wildcard_import.js";
 
 async function processArrayItems(fileData) {
     try {
@@ -14,46 +16,44 @@ async function processArrayItems(fileData) {
 }
 
 function contentToString(content) {
-    console.log(Buffer.from(content, "base64").toString("utf-8"));
     return Buffer.from(content, "base64").toString("utf-8");
 }
 
 export function process_pr(context) {
     // Get updated files in the current PR
-
-    const result = sendFileRequest(
+    return sendFileRequest(
         context.payload.repository.owner.login,
         context.payload.repository.name,
         context.payload.number
-    );
-
-    // Get contents of the each updated file
-    result
-        .then((data) => {
-            console.log("File request is successful");
-            const fileContents = processArrayItems(data);
-
-            fileContents
-                .then((data) => {
-                    console.log("File contents are fetched successfuly");
-                    const contentString = data.map((file) =>
-                        contentToString(file.content)
-                    );
-                    check_pr_content(contentString);
-                })
-                .catch((error) => {
-                    console.error("Error1:", error);
-                });
-        })
-        .catch((error) => {
-            console.error("Error2:", error);
-        });
+    )
+    .then((data) => {
+        console.log("File request is successful");
+        return processArrayItems(data);
+    })
+    .then((fileContents) => {
+        console.log("File contents are fetched successfully");
+        return fileContents.map((file) => ({
+            contentString: contentToString(file.content),
+            path: file.path,
+        }));
+    })
+    .then((files) => {
+        console.log("Files are prepared for checking");
+        return check_pr_content(files);
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+    });
 }
 
-function check_pr_content(contents) {
-    contents.forEach((file) => {
-        console.log(file);
+function check_pr_content(files) {
+    const results = [];
+    files.forEach((file) => {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
-        getMethodLengths(file);
+        results.push(checkMethodLengths(file.contentString));
+        results.push(checkUnusedImports(file.contentString, file.path));
+        results.push(checkWildcardImports(file.contentString, file.path));
     });
+
+    return results;
 }
