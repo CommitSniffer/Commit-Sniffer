@@ -31,7 +31,7 @@ async function useMultiPromptChat(chat, prompt) {
     return text;
 }
 
-async function onePromptChat(prompt) {
+async function getResponse(prompt) {
     const result = await getModel().generateContent(prompt);
     const response = await result.response;
     const text = response.text();
@@ -46,4 +46,4 @@ function sanitizeJSONResult(response) {
     return result;
 }
 
-export { multiPromptChat, useMultiPromptChat, onePromptChat, sanitizeJSONResult }
+export { multiPromptChat, useMultiPromptChat, getResponse, sanitizeJSONResult }

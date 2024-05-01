@@ -1,53 +1,8 @@
 import { MAX_FCN_LENGTH } from "../const/const.js";
-import { Stack } from "./stack.js";
-const javaCode = `
-public class Example {
-    public void method1() {
-        // Code here
+import { removeCommentsAndEmptyLines } from "./common/remove_spaces_and_comments.js";
+import { Stack } from "./common/stack.js";
 
-        for (var) {
-            var++;
-            if (amogus) {
-                amogus
-            }
-
-            do {
-                aa++
-            } while (false)
-        }
-    }
-
-    private int method2(int param)
-
-
-    {
-        /*
-        hola
-        come
-        estas
-        */
-        // Code here
-        return param * 2;
-    }
-
-    protected void method3() { int++;
-        // Code here
-        /**  
-        * 
-        *We can use various tags to depict the parameter 
-        *or heading or author name 
-        *We can also use HTML tags   
-        * 
-        */    
-    int = 1}
-
-    protected void method4() { }
-    protected void method5() { 
-
-    }
-}`;
-
-export function checkMethodLengths(fileContent = javaCode) {
+export function checkMethodLengths(fileContent) {
     let result = getMethodLengths(fileContent);
     const msg = [];
 
@@ -55,12 +10,14 @@ export function checkMethodLengths(fileContent = javaCode) {
     result.forEach((method) => {
         if (method.length > MAX_FCN_LENGTH) {
             msg.push(
-                `Method ${method.methodSign} starting at line ${findMethodLine(
+                `Method \`${
+                    method.methodSign
+                }\` starting at \`line ${findMethodLine(
                     fileContent,
                     method.methodSign
-                )} exceeds max method legth constraint since its length is ${
+                )}\` exceeds max method legth constraint since its length is \`${
                     method.length
-                }`
+                }\``
             );
         }
     });
@@ -76,7 +33,7 @@ function findMethodLine(file, methodSign) {
         .map(({ line }) => line);
 }
 
-function getMethodLengths(fileContent = javaCode) {
+function getMethodLengths(fileContent) {
     // TODO what if there are new lines between method tokens
 
     // Create a stack to match opening and closing braces
@@ -185,20 +142,4 @@ function getMethodLengths(fileContent = javaCode) {
     }
 
     return methodLengths;
-}
-
-function removeCommentsAndEmptyLines(fileContent) {
-    // Remove single-line comments
-    fileContent = fileContent.replace(/\/\/.*$/gm, "");
-
-    // Remove multi-line comments
-    fileContent = fileContent.replace(/\/\*[\s\S]*?\*\//g, "");
-
-    // Remove Javadoc comments
-    fileContent = fileContent.replace(/\/\*\*[\s\S]*?\*\//g, "");
-
-    // Remove empty lines
-    fileContent = fileContent.replace(/^\s*[\r\n]/gm, "");
-
-    return fileContent;
 }
