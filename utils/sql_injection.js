@@ -1,3 +1,5 @@
+import { getResponse } from "./gemini_api.js";
+
 export async function checkSqlInjection(fileContent, filePath) {
   // Prepare the prompt for the LLM
   const prompt = 
@@ -17,6 +19,6 @@ export async function checkSqlInjection(fileContent, filePath) {
       return [`Potential SQL injection vulnerability in ${filePath}:\n\n${response}`];
   }
   else {
-      return [];
+      return [`No SQL injection vulnerabilities found in ${filePath}`];
   }
 }
