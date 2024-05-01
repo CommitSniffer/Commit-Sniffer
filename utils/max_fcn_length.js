@@ -1,5 +1,6 @@
 import { MAX_FCN_LENGTH } from "../const/const.js";
-import { Stack } from "./stack.js";
+import { removeCommentsAndEmptyLines } from "./common/remove_spaces_and_comments.js";
+import { Stack } from "./common/stack.js";
 
 export function checkMethodLengths(fileContent) {
     let result = getMethodLengths(fileContent);
@@ -141,20 +142,4 @@ function getMethodLengths(fileContent) {
     }
 
     return methodLengths;
-}
-
-function removeCommentsAndEmptyLines(fileContent) {
-    // Remove single-line comments
-    fileContent = fileContent.replace(/\/\/.*$/gm, "");
-
-    // Remove multi-line comments
-    fileContent = fileContent.replace(/\/\*[\s\S]*?\*\//g, "");
-
-    // Remove Javadoc comments
-    fileContent = fileContent.replace(/\/\*\*[\s\S]*?\*\//g, "");
-
-    // Remove empty lines
-    fileContent = fileContent.replace(/^\s*[\r\n]/gm, "");
-
-    return fileContent;
 }
