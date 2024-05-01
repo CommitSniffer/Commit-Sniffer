@@ -3,12 +3,13 @@ import {
     sendDiffFileRequest,
     sendFileRequest,
 } from "../request/request.js";
-import { checkMethodLengths } from "./max_length.js";
-import { createReviewObj } from "./review_object.js";
+import { checkMethodLengths } from "./max_fcn_length.js";
+import { createReviewObj } from "./common/review_object.js";
 import { checkUnnecessaryNesting } from "./nesting.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkIncorrectNamingConventions } from "./naming.js";
 import { checkWildcardImports } from "./wildcard_import.js";
+import { checkClassLengths } from "./max_class_length.js";
 
 export async function process_pr(context) {
     // Get updated files in the current PR
@@ -74,13 +75,16 @@ function check_pr_content(files) {
     const results = [];
     files.forEach((file) => {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
-        results.push(checkMethodLengths(file.contentString));
-        results.push(checkUnusedImports(file.contentString, file.path));
-        results.push(checkIncorrectNamingConventions(file.contentString, file.path));
-        results.push(checkWildcardImports(file.contentString, file.path));
+        // results.push(checkMethodLengths(file.contentString));
+        // results.push(checkUnusedImports(file.contentString, file.path));
+        // results.push(
+        //     checkIncorrectNamingConventions(file.contentString, file.path)
+        // );
+        // results.push(checkWildcardImports(file.contentString, file.path));
+        results.push(checkClassLengths(file.contentString, file.path));
 
         // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
-        results.push(checkUnnecessaryNesting(file.contentString, file.path));
+        // results.push(checkUnnecessaryNesting(file.contentString, file.path));
     });
 
     return results;
