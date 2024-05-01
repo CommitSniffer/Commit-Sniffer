@@ -11,7 +11,7 @@ export async function checkSqlInjection(fileContent, filePath) {
       If you see no vulnerabilities, just reply with "NO".
       It is crucial you follow the prompts extremely carefully. File contents:\n\n${fileContent}`;
 
-  const response = "" // await llm.ask(prompt);
+  const response = await getResponse(prompt);
 
   if (response.trim().length > 0 && response.trim().toUpperCase() !== "NO") {
       return [`Potential SQL injection vulnerability in ${filePath}:\n\n${response}`];
