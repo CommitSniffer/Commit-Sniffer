@@ -42,8 +42,6 @@ export async function sendFileRequest(owner, repo, pull_number) {
             },
         });
 
-        // console.log("data:", response.data);
-
         return response.data;
     } catch (error) {
         console.error("Error occurred while fetching files:", error);
@@ -71,8 +69,6 @@ export async function publishPrReview(owner, repo, pull_number, diff_file) {
                 "X-GitHub-Api-Version": "2022-11-28",
             },
         });
-
-        // console.log("data:", response.data);
 
         return response.data;
     } catch (error) {
