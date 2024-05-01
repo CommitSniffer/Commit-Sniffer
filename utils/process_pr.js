@@ -10,6 +10,7 @@ import { checkSqlInjection } from "./sql_injection.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkIncorrectNamingConventions } from "./naming.js";
 import { checkWildcardImports } from "./wildcard_import.js";
+import { checkCommentSmells } from "./comment_smell.js";
 import { checkClassLengths } from "./max_class_length.js";
 import { checkUnusedVariables } from "./unused_variables.js";
 
