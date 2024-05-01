@@ -9,6 +9,7 @@ import { checkUnnecessaryNesting } from "./nesting.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkIncorrectNamingConventions } from "./naming.js";
 import { checkWildcardImports } from "./wildcard_import.js";
+import { checkCommentSmells } from "./gemini_api.js";
 import { checkUnusedVariables } from "./unused_variables.js";
 
 export async function process_pr(context) {
@@ -83,6 +84,7 @@ function check_pr_content(files) {
 
         // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
         results.push(checkUnnecessaryNesting(file.contentString, file.path));
+        results.push(checkCommentSmells(file.contentString));
     });
 
     return results;
