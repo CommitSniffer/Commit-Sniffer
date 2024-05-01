@@ -9,6 +9,7 @@ import { checkUnnecessaryNesting } from "./nesting.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkIncorrectNamingConventions } from "./naming.js";
 import { checkWildcardImports } from "./wildcard_import.js";
+import { checkUnusedVariables } from "./unused_variables.js";
 
 export async function process_pr(context) {
     // Get updated files in the current PR
@@ -76,6 +77,7 @@ function check_pr_content(files) {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
         results.push(checkMethodLengths(file.contentString));
         results.push(checkUnusedImports(file.contentString, file.path));
+        results.push(checkUnusedVariables(file.contentString, file.path));
         results.push(checkIncorrectNamingConventions(file.contentString, file.path));
         results.push(checkWildcardImports(file.contentString, file.path));
 
