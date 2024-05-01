@@ -1,5 +1,7 @@
 import { sendContentRequest, sendFileRequest } from "../request/request.js";
 import { checkMethodLengths } from "./max_length.js";
+import { checkUnusedImports } from "./unused_import.js";
+import { checkWildcardImports } from "./wildcard_import.js";
 
 async function processArrayItems(fileData) {
     try {
@@ -24,27 +26,33 @@ export function process_pr(context) {
         context.payload.repository.name,
         context.payload.number
     )
-        .then((data) => {
-            console.log("File request is successful");
-            return processArrayItems(data);
-        })
-        .then((fileContents) => {
-            console.log("File contents are fetched successfuly");
-            const contentStrings = fileContents.map((file) =>
-                contentToString(file.content)
-            );
-            return check_pr_content(contentStrings);
-        })
-        .catch((error) => {
-            console.error("Error:", error);
-        });
+    .then((data) => {
+        console.log("File request is successful");
+        return processArrayItems(data);
+    })
+    .then((fileContents) => {
+        console.log("File contents are fetched successfully");
+        return fileContents.map((file) => ({
+            contentString: contentToString(file.content),
+            path: file.path,
+        }));
+    })
+    .then((files) => {
+        console.log("Files are prepared for checking");
+        return check_pr_content(files);
+    })
+    .catch((error) => {
+        console.error("Error:", error);
+    });
 }
 
-function check_pr_content(contents) {
+function check_pr_content(files) {
     const results = [];
-    contents.forEach((file) => {
+    files.forEach((file) => {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
-        results.push(checkMethodLengths(file));
+        results.push(checkMethodLengths(file.contentString));
+        results.push(checkUnusedImports(file.contentString, file.path));
+        results.push(checkWildcardImports(file.contentString, file.path));
     });
 
     return results;

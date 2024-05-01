@@ -21,7 +21,7 @@ export default (app) => {
         return;
     });
 
-    app.on(["pull_request.opened", "pull_request.edited"], async (context) => {
+    app.on(["pull_request.opened", "pull_request.edited", "pull_request.reopened"], async (context) => {
         // Process PR and check for code smells
         process_pr(context)
             .then((result) => {
