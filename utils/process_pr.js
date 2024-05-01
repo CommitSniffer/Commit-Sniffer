@@ -1,5 +1,6 @@
 import { sendContentRequest, sendFileRequest } from "../request/request.js";
 import { checkMethodLengths } from "./max_length.js";
+import { checkUnnecessaryNesting } from "./nesting.js";
 import { checkUnusedImports } from "./unused_import.js";
 import { checkIncorrectNamingConventions } from "./naming.js";
 import { checkWildcardImports } from "./wildcard_import.js";
@@ -55,6 +56,9 @@ function check_pr_content(files) {
         results.push(checkUnusedImports(file.contentString, file.path));
         results.push(checkIncorrectNamingConventions(file.contentString, file.path));
         results.push(checkWildcardImports(file.contentString, file.path));
+
+        // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
+        results.push(checkUnnecessaryNesting(file.contentString, file.path));
     });
 
     return results;
