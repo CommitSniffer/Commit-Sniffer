@@ -32,10 +32,10 @@ async function useMultiPromptChat(chat, prompt) {
 }
 
 async function getResponse(prompt) {
-    const result = await getModel().generateContent(prompt);
-    const response = await result.response;
-    const text = response.text();
-    return text
+    const model = await getModel();
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    return response.candidates[0].content.parts[0].text;
 }
 
 function sanitizeJSONResult(response) {
