@@ -72,9 +72,9 @@ function contentToString(content) {
     return Buffer.from(content, "base64").toString("utf-8");
 }
 
-function check_pr_content(files) {
+async function check_pr_content(files) {
     const results = [];
-    files.forEach((file) => {
+    for (const file of files) {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
         results.push(checkMethodLengths(file.contentString));
         results.push(checkUnusedImports(file.contentString, file.path));
@@ -84,9 +84,10 @@ function check_pr_content(files) {
         results.push(checkClassLengths(file.contentString, file.path));
 
         // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
-        results.push(checkUnnecessaryNesting(file.contentString, file.path));
-        results.push(checkCommentSmells(file.contentString));
-    });
+        results.push(await checkUnnecessaryNesting(file.contentString, file.path));
+
+        // results.push(checkCommentSmells(file.contentString));
+    }
 
     return results;
 }

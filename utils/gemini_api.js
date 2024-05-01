@@ -2,8 +2,14 @@ import { GEMINI_MODEL } from "../const/const.js";
 
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
+export async function getResponse(prompt) {
+    const model = new GoogleGenerativeAI(process.env.GEMINI_API_KEY).getGenerativeModel({ model: GEMINI_MODEL });
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    return response.candidates[0].content.parts[0].text;
+}
 
-async function newChat(roleDefinition, maxOutputTokens = 2048) {
+export async function newChat(roleDefinition, maxOutputTokens = 2048) {
     return new GoogleGenerativeAI(process.env.GEMINI_API_KEY).getGenerativeModel({ model: GEMINI_MODEL }).startChat({
         history: [
             {
@@ -21,7 +27,7 @@ async function newChat(roleDefinition, maxOutputTokens = 2048) {
     });
 }
 
-async function useChat(chat, prompt) {
+export async function useChat(chat, prompt) {
     const result = await chat.sendMessage(prompt);
     const response = await result.response;
     const text = response.text();
