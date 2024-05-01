@@ -1,3 +1,5 @@
+import { getResponse } from "./gemini_api.js";
+
 export async function checkSqlInjection(fileContent, filePath) {
   // Prepare the prompt for the LLM
   const prompt = 
