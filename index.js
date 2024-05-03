@@ -1,18 +1,20 @@
-import { Config } from "./const/config.js";
+import { ENV } from "./const/env.js";
+import { setConfig } from "./const/config.js";
 import { process_pr } from "./utils/process_pr.js";
 /**
  * This is the main entrypoint to your Probot app
  * @param {import('probot').Probot} app
  */
 export default (app) => {
-    // Load configs
-    const config = new Config();
+    // Load environment variables
+    const envVars = new ENV();
 
     app.log.info("CommitSniffer is loaded!");
 
     // console.log(getMethodLengths());
 
     app.on("issues.opened", async (context) => {
+        await setConfig(context);
         const issueComment = context.issue({
             body: "Thanks for opening this issue!",
         });
@@ -25,6 +27,8 @@ export default (app) => {
         ["pull_request.opened", "pull_request.edited", "pull_request.reopened"],
         async (context) => {
             try {
+                await setConfig(context);
+
                 // Process PR and check for code smells
                 const result = await process_pr(context);
 

@@ -13,6 +13,7 @@ import { checkWildcardImports } from "./wildcard_import.js";
 import { checkCommentSmells } from "./comment_smell.js";
 import { checkClassLengths } from "./max_class_length.js";
 import { checkUnusedVariables } from "./unused_variables.js";
+import { CONFIG } from "../const/config.js";
 
 export async function process_pr(context) {
     // Get updated files in the current PR
@@ -78,17 +79,17 @@ async function check_pr_content(files) {
     const results = [];
     for (const file of files) {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
-        results.push(checkMethodLengths(file.contentString));
-        results.push(checkUnusedImports(file.contentString, file.path));
-        results.push(checkUnusedVariables(file.contentString, file.path));
-        results.push(checkIncorrectNamingConventions(file.contentString, file.path));
-        results.push(checkWildcardImports(file.contentString, file.path));
-        results.push(checkClassLengths(file.contentString, file.path));
+        if (CONFIG.METHOD_LENGTHS) results.push(checkMethodLengths(file.contentString));
+        if (CONFIG.UNUSED_IMPORTS) results.push(checkUnusedImports(file.contentString, file.path));
+        if (CONFIG.UNUSED_VARIABLES) results.push(checkUnusedVariables(file.contentString, file.path));
+        if (CONFIG.INCORRECT_NAMING_CONVENTIONS) results.push(checkIncorrectNamingConventions(file.contentString, file.path));
+        if (CONFIG.WILDCARD_IMPORTS) results.push(checkWildcardImports(file.contentString, file.path));
+        if (CONFIG.CLASS_LENGTHS) results.push(checkClassLengths(file.contentString, file.path));
 
         // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
-        results.push(await checkUnnecessaryNesting(file.contentString, file.path));
-        results.push(await checkSqlInjection(file.contentString, file.path));
-        results.push(await checkCommentSmells(file.contentString, file.path));
+        if (CONFIG.UNNECESSARY_NESTING) results.push(await checkUnnecessaryNesting(file.contentString, file.path));
+        if (CONFIG.SQL_INJECTION) results.push(await checkSqlInjection(file.contentString, file.path));
+        if (CONFIG.COMMENT_SMELLS) results.push(await checkCommentSmells(file.contentString, file.path));
     };
 
     return results;
