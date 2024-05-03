@@ -1,4 +1,4 @@
-import { MAX_FCN_LENGTH } from "../const/const.js";
+import { CONFIG } from "../const/config.js";
 import { removeCommentsAndEmptyLines } from "./common/remove_spaces_and_comments.js";
 import { Stack } from "./common/stack.js";
 
@@ -8,7 +8,7 @@ export function checkMethodLengths(fileContent) {
 
     // if a method has an excessive length, find its starting line
     result.forEach((method) => {
-        if (method.length > MAX_FCN_LENGTH) {
+        if (method.length > CONFIG.MAX_FCN_LENGTH) {
             msg.push(
                 `Method \`${
                     method.methodSign

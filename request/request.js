@@ -1,8 +1,8 @@
 import { Octokit } from "@octokit/core";
-import { Config } from "../const/config.js";
+import { ENV } from "../const/env.js";
 
 const octokit = new Octokit({
-    auth: Config.GITHUB_API_KEY,
+    auth: ENV.GITHUB_API_KEY,
 });
 
 export async function sendDiffFileRequest(owner, repo, pull_number) {

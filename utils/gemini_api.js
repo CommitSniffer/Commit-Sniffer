@@ -1,9 +1,9 @@
-import { GEMINI_MODEL } from "../const/const.js";
-
+import { CONFIG } from "../const/config.js";
+import { ENV } from "../const/env.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-function getModel(model = GEMINI_MODEL) {
-    return new GoogleGenerativeAI(process.env.GEMINI_API_KEY).getGenerativeModel({ model: model });
+function getModel(model = CONFIG.GEMINI_MODEL) {
+    return new GoogleGenerativeAI(ENV.GEMINI_API_KEY).getGenerativeModel({ model: model });
 }
 
 async function multiPromptChat(roleDefinition, maxOutputTokens = 2048) {
