@@ -88,7 +88,7 @@ async function check_pr_content(files) {
         // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
         results.push(await checkUnnecessaryNesting(file.contentString, file.path));
         results.push(await checkSqlInjection(file.contentString, file.path));
-        results.push(await checkCommentSmells(file.contentString));
+        results.push(await checkCommentSmells(file.contentString, file.path));
     };
 
     return results;
