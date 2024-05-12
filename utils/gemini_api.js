@@ -3,7 +3,9 @@ import { ENV } from "../const/env.js";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 function getModel(model = CONFIG.GEMINI_MODEL) {
-    return new GoogleGenerativeAI(ENV.GEMINI_API_KEY).getGenerativeModel({ model: model });
+    return new GoogleGenerativeAI(ENV.GEMINI_API_KEY).getGenerativeModel({
+        model: model,
+    });
 }
 
 async function multiPromptChat(roleDefinition, maxOutputTokens = 2048) {
@@ -15,7 +17,11 @@ async function multiPromptChat(roleDefinition, maxOutputTokens = 2048) {
             },
             {
                 role: "model",
-                parts: [{ text: "Okay, I am waiting for the data you will provide. I will response only as you define." }],
+                parts: [
+                    {
+                        text: "Okay, I am waiting for the data you will provide. I will response only as you define.",
+                    },
+                ],
             },
         ],
         generationConfig: {
@@ -46,4 +52,4 @@ function sanitizeJSONResult(response) {
     return result;
 }
 
-export { multiPromptChat, useMultiPromptChat, getResponse, sanitizeJSONResult }
+export { multiPromptChat, useMultiPromptChat, getResponse, sanitizeJSONResult };
