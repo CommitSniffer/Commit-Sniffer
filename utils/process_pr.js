@@ -14,6 +14,7 @@ import { checkCommentSmells } from "./comment_smell.js";
 import { checkClassLengths } from "./max_class_length.js";
 import { checkUnusedVariables } from "./unused_variables.js";
 import { CONFIG } from "../const/config.js";
+import { checkCodeShortening } from "./shortening.js";
 
 export async function process_pr(context) {
     // Get updated files in the current PR
@@ -90,6 +91,7 @@ async function check_pr_content(files) {
         if (CONFIG.UNNECESSARY_NESTING) results.push(await checkUnnecessaryNesting(file.contentString, file.path));
         if (CONFIG.SQL_INJECTION) results.push(await checkSqlInjection(file.contentString, file.path));
         if (CONFIG.COMMENT_SMELLS) results.push(await checkCommentSmells(file.contentString, file.path));
+        if (CONFIG.CODE_SHORTENING) results.push(await checkCodeShortening(file.contentString, file.path));
     };
 
     return results;
