@@ -8,4 +8,4 @@
 - Run the project with one of these commands:
   - npm start
   - npm run dev
--- Note: npm run dev enables the application to rerun when new changes are saved
+- Note: npm run dev enables the application to rerun when new changes are saved
