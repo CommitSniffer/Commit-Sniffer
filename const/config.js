@@ -14,6 +14,7 @@ class Config {
         "UNNECESSARY_NESTING",
         "SQL_INJECTION",
         "COMMENT_SMELLS",
+        "CODE_SHORTENING",
         "MAX_FCN_LENGTH",
         "MAX_CLASS_LENGTH",
         "GEMINI_MODEL"

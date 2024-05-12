@@ -29,14 +29,6 @@ export async function checkUnnecessaryNesting(fileContent, filePath) {
     
     const response = await getResponse(prompt2);
 
-    console.log("response");
-    console.log("response");
-    console.log("response");
-    console.log(response);
-    console.log("response");
-    console.log("response");
-    console.log("response");
-
     if (response.trim().length > 0 && response.trim().toUpperCase() !== "NO") {
         return [`Refactor to remove unnecessary nesting in \`${filePath}\`:\n\n${response}`];
     }
