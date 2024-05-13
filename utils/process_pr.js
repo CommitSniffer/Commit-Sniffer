@@ -17,10 +17,13 @@ import { CONFIG } from "../const/config.js";
 import { checkCodeShortening } from "./shortening.js";
 
 export async function process_pr(context) {
+    const [comments, file] = await process_pr_for_files(context);
+
     // Get updated files in the current PR
     return {
         review: await process_pr_for_diffs(context),
-        comment: await process_pr_for_files(context),
+        comment: comments,
+        filePath: file.path,
     };
 }
 
@@ -79,22 +82,47 @@ function contentToString(content) {
 async function check_pr_content(files) {
     const results = [];
     for (const file of files) {
+        // If the current file is the config file, skip checks
+        if (file.path == "commitsniffer.config") {
+            continue;
+        }
+
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
-        if (CONFIG.METHOD_LENGTHS) results.push(checkMethodLengths(file.contentString));
-        if (CONFIG.UNUSED_IMPORTS) results.push(checkUnusedImports(file.contentString, file.path));
-        if (CONFIG.UNUSED_VARIABLES) results.push(checkUnusedVariables(file.contentString, file.path));
-        if (CONFIG.INCORRECT_NAMING_CONVENTIONS) results.push(checkIncorrectNamingConventions(file.contentString, file.path));
-        if (CONFIG.WILDCARD_IMPORTS) results.push(checkWildcardImports(file.contentString, file.path));
-        if (CONFIG.CLASS_LENGTHS) results.push(checkClassLengths(file.contentString, file.path));
+        if (CONFIG.METHOD_LENGTHS)
+            results.push(checkMethodLengths(file.contentString));
+        if (CONFIG.UNUSED_IMPORTS)
+            results.push(checkUnusedImports(file.contentString, file.path));
+        if (CONFIG.UNUSED_VARIABLES)
+            results.push(checkUnusedVariables(file.contentString, file.path));
+        if (CONFIG.INCORRECT_NAMING_CONVENTIONS)
+            results.push(
+                checkIncorrectNamingConventions(file.contentString, file.path)
+            );
+        if (CONFIG.WILDCARD_IMPORTS)
+            results.push(checkWildcardImports(file.contentString, file.path));
+        if (CONFIG.CLASS_LENGTHS)
+            results.push(checkClassLengths(file.contentString, file.path));
 
         // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
-        if (CONFIG.UNNECESSARY_NESTING) results.push(await checkUnnecessaryNesting(file.contentString, file.path));
-        if (CONFIG.SQL_INJECTION) results.push(await checkSqlInjection(file.contentString, file.path));
-        if (CONFIG.COMMENT_SMELLS) results.push(await checkCommentSmells(file.contentString, file.path));
-        if (CONFIG.CODE_SHORTENING) results.push(await checkCodeShortening(file.contentString, file.path));
-    };
+        if (CONFIG.UNNECESSARY_NESTING)
+            results.push(
+                await checkUnnecessaryNesting(file.contentString, file.path)
+            );
+        if (CONFIG.SQL_INJECTION)
+            results.push(
+                await checkSqlInjection(file.contentString, file.path)
+            );
+        if (CONFIG.COMMENT_SMELLS)
+            results.push(
+                await checkCommentSmells(file.contentString, file.path)
+            );
+        if (CONFIG.CODE_SHORTENING)
+            results.push(
+                await checkCodeShortening(file.contentString, file.path)
+            );
+    }
 
-    return results;
+    return [results, files[0]];
 }
 
 function check_pr_diff_content(diff_files) {

@@ -17,25 +17,29 @@ class Config {
         "CODE_SHORTENING",
         "MAX_FCN_LENGTH",
         "MAX_CLASS_LENGTH",
-        "GEMINI_MODEL"
+        "MIN_REJECT_THRESHOLD",
+        "GEMINI_MODEL",
     ];
 
     validateConfig(config) {
         let notExistingKeys = [];
-        for (const key of Config.REQUIRED_KEYS) if (!config.hasOwnProperty(key)) notExistingKeys.push(key);
-        if (notExistingKeys.length > 0) throw new Error(`Missing configuration for "${notExistingKeys}"`);
+        for (const key of Config.REQUIRED_KEYS)
+            if (!config.hasOwnProperty(key)) notExistingKeys.push(key);
+        if (notExistingKeys.length > 0)
+            throw new Error(`Missing configuration for "${notExistingKeys}"`);
         return true;
     }
 
     constructor(configJson) {
         const config = JSON.parse(configJson);
-        this.validateConfig(config)
-        for (const key in config) Object.defineProperty(this, key, {
-            value: config[key],
-            writable: false,
-            enumerable: true,
-            configurable: false
-        });
+        this.validateConfig(config);
+        for (const key in config)
+            Object.defineProperty(this, key, {
+                value: config[key],
+                writable: false,
+                enumerable: true,
+                configurable: false,
+            });
     }
 }
 
@@ -45,14 +49,13 @@ export async function setConfig(context) {
         let repo = context.payload.repository.name;
         let url = `/repos/${owner}/${repo}/contents/commitsniffer.config`;
         let rawData = await sendContentRequest(url);
-        let jsonData = Buffer.from(rawData.content, 'base64').toString()
+        let jsonData = Buffer.from(rawData.content, "base64").toString();
         if (jsonData === "") throw new Error(`Configuration file is empty"`);
         if (jsonData !== prevJsonData) {
             CONFIG = new Config(jsonData);
             prevJsonData = jsonData;
         }
-    }
-    catch (error) {
+    } catch (error) {
         throw new Error("Could not read config file: " + error);
-    };
+    }
 }

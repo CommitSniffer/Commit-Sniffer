@@ -1,6 +1,7 @@
 import { ENV } from "./const/env.js";
-import { setConfig } from "./const/config.js";
+import { CONFIG, setConfig } from "./const/config.js";
 import { process_pr } from "./utils/process_pr.js";
+import { createReviewObj } from "./utils/common/review_object.js";
 /**
  * This is the main entrypoint to your Probot app
  * @param {import('probot').Probot} app
@@ -46,13 +47,26 @@ export default (app) => {
 
                     createComment(context, msg);
                 });
-                result.review.forEach((reviewObject) => {
-                    createReview(context, reviewObject);
-                });
+
+                const resultsFlattenedLength = result.comment.reduce(
+                    (acc, curr) => acc.concat(curr),
+                    []
+                ).length;
+                if (resultsFlattenedLength >= CONFIG.MIN_REJECT_THRESHOLD) {
+                    console.log("aloo: ", result.filePath);
+                    createReview(
+                        context,
+                        createReviewObj(
+                            `Number of detected code smells are detected as \`${resultsFlattenedLength}\` exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\``,
+                            result.filePath,
+                            0
+                        )
+                    );
+                }
             } catch (error) {
                 console.error("Error processing PR:", error);
                 const prComment = context.issue({
-                    body: "We cannot process your PR right now :(\nPlease try again later.",
+                    body: "We cannot process your PR right now :(\n" + error,
                 });
                 return context.octokit.issues.createComment(prComment);
             }
@@ -76,15 +90,13 @@ export default (app) => {
             repo: repo,
             pull_number: pull_number,
             body: "Please update your branch according to suggested changes!",
-            event: "REQUEST_CHANGES", // Specify the review action (APPROVE, REQUEST_CHANGES, or COMMENT)
+            event: "REQUEST_CHANGES", // (APPROVE, REQUEST_CHANGES, or COMMENT)
             comments: [
                 {
                     position: reviewObj.position,
                     path: reviewObj.filePath,
                     body: reviewObj.msg,
-                    // You can optionally specify comments[].position if needed
                 },
-                // Add more comments if necessary
             ],
         });
     }
