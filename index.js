@@ -44,21 +44,25 @@ export default (app) => {
                     createComment(context, msg);
                 });
 
-                const resultsFlattenedLength = result.comment.reduce(
-                    (acc, curr) => acc.concat(curr),
-                    []
-                ).length;
+                const flatResult = result.comment
+                    .reduce((acc, curr) => acc.concat(curr), [])
+                    .filter((str) => str.trim() !== "");
+
+                const resultsFlattenedLength = flatResult.length;
+
+                console.log("results flat:", flatResult);
+                console.log("length:", resultsFlattenedLength);
 
                 if (resultsFlattenedLength >= CONFIG.MIN_REJECT_THRESHOLD) {
                     createReview(
                         context,
                         createReviewObj(
-                            `\`${resultsFlattenedLength - 1}\` code smells are detected exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\`!`,
+                            `\`${resultsFlattenedLength}\` code smells are detected exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\`!`,
                             result.filePath,
                             0
                         )
                     );
-                } else if (resultsFlattenedLength <= 1) {
+                } else if (resultsFlattenedLength == 0) {
                     createReview(
                         context,
                         createReviewObj(
@@ -72,7 +76,7 @@ export default (app) => {
                     createReview(
                         context,
                         createReviewObj(
-                            `\`${resultsFlattenedLength - 1}\` code smells are detected which is below the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\``,
+                            `\`${resultsFlattenedLength}\` code smells are detected which is below the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\``,
                             result.filePath,
                             0
                         ),
