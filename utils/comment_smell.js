@@ -28,7 +28,10 @@ export async function checkCommentSmells(fileContent, filePath) {
                         notOkComments.push(`\`${notOkComment}\` on \`line ${line}\``);
                 }
             });
-            return [`Non-expressive comments in file \`${filePath}\`\n` + notOkComments.join("\n")];
+            if (notOkComments.length > 0)
+                return [`Non-expressive comments in file \`${filePath}\`\n` + notOkComments.join("\n")];
+            else
+                return [];
         }
         catch {
             console.error("Error while comment smell analysis!")
