@@ -12,8 +12,6 @@ export default (app) => {
 
     app.log.info("CommitSniffer is loaded!");
 
-    // console.log(getMethodLengths());
-
     app.on("issues.opened", async (context) => {
         await setConfig(context);
         const issueComment = context.issue({
@@ -33,8 +31,6 @@ export default (app) => {
                 // Process PR and check for code smells
                 const result = await process_pr(context);
 
-                console.log("review", result.review);
-                console.log("comment", result.comment);
                 result.comment.forEach((msgGroup) => {
                     if (msgGroup.length == 0) {
                         return;
@@ -52,15 +48,35 @@ export default (app) => {
                     (acc, curr) => acc.concat(curr),
                     []
                 ).length;
+
                 if (resultsFlattenedLength >= CONFIG.MIN_REJECT_THRESHOLD) {
-                    console.log("aloo: ", result.filePath);
                     createReview(
                         context,
                         createReviewObj(
-                            `Number of detected code smells are detected as \`${resultsFlattenedLength}\` exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\``,
+                            `\`${resultsFlattenedLength}\` code smells are detected exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\`!`,
                             result.filePath,
                             0
                         )
+                    );
+                } else if (resultsFlattenedLength == 0) {
+                    createReview(
+                        context,
+                        createReviewObj(
+                            `Well Done! No code smells are detected.`,
+                            result.filePath,
+                            0
+                        ),
+                        false
+                    );
+                } else {
+                    createReview(
+                        context,
+                        createReviewObj(
+                            `\`${resultsFlattenedLength}\` code smells are detected which is below the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\``,
+                            result.filePath,
+                            0
+                        ),
+                        false
                     );
                 }
             } catch (error) {
@@ -80,7 +96,7 @@ export default (app) => {
         return context.octokit.issues.createComment(comment);
     }
 
-    function createReview(context, reviewObj) {
+    function createReview(context, reviewObj, requestChange = true) {
         const owner = context.payload.repository.owner.login;
         const repo = context.payload.repository.name;
         const pull_number = context.payload.number;
@@ -89,15 +105,17 @@ export default (app) => {
             owner: owner,
             repo: repo,
             pull_number: pull_number,
-            body: "Please update your branch according to suggested changes!",
-            event: "REQUEST_CHANGES", // (APPROVE, REQUEST_CHANGES, or COMMENT)
-            comments: [
-                {
-                    position: reviewObj.position,
-                    path: reviewObj.filePath,
-                    body: reviewObj.msg,
-                },
-            ],
+            body: requestChange
+                ? `Please update your branch according to suggested changes! ${reviewObj.msg}`
+                : reviewObj.msg,
+            event: requestChange ? "REQUEST_CHANGES" : "APPROVE", // (APPROVE, REQUEST_CHANGES, or COMMENT)
+            // comments: [
+            //     {
+            //         position: reviewObj.position,
+            //         path: reviewObj.filePath,
+            //         body: reviewObj.msg,
+            //     },
+            // ],
         });
     }
 

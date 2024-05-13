@@ -103,7 +103,7 @@ async function check_pr_content(files) {
         if (CONFIG.CLASS_LENGTHS)
             results.push(checkClassLengths(file.contentString, file.path));
 
-        // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
+        // // !!! ADD GEN-AI BASED CHECKS BELOW THIS LINE !!!
         if (CONFIG.UNNECESSARY_NESTING)
             results.push(
                 await checkUnnecessaryNesting(file.contentString, file.path)
