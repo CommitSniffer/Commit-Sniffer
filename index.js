@@ -53,7 +53,7 @@ export default (app) => {
                     createReview(
                         context,
                         createReviewObj(
-                            `\`${resultsFlattenedLength}\` code smells are detected exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD - 1}\`!`,
+                            `\`${resultsFlattenedLength - 1}\` code smells are detected exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\`!`,
                             result.filePath,
                             0
                         )
@@ -72,7 +72,7 @@ export default (app) => {
                     createReview(
                         context,
                         createReviewObj(
-                            `\`${resultsFlattenedLength}\` code smells are detected which is below the threshold \`${CONFIG.MIN_REJECT_THRESHOLD - 1}\``,
+                            `\`${resultsFlattenedLength - 1}\` code smells are detected which is below the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\``,
                             result.filePath,
                             0
                         ),
