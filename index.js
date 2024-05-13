@@ -53,12 +53,12 @@ export default (app) => {
                     createReview(
                         context,
                         createReviewObj(
-                            `\`${resultsFlattenedLength}\` code smells are detected exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\`!`,
+                            `\`${resultsFlattenedLength}\` code smells are detected exceeding the threshold \`${CONFIG.MIN_REJECT_THRESHOLD - 1}\`!`,
                             result.filePath,
                             0
                         )
                     );
-                } else if (resultsFlattenedLength == 0) {
+                } else if (resultsFlattenedLength <= 1) {
                     createReview(
                         context,
                         createReviewObj(
@@ -72,7 +72,7 @@ export default (app) => {
                     createReview(
                         context,
                         createReviewObj(
-                            `\`${resultsFlattenedLength}\` code smells are detected which is below the threshold \`${CONFIG.MIN_REJECT_THRESHOLD}\``,
+                            `\`${resultsFlattenedLength}\` code smells are detected which is below the threshold \`${CONFIG.MIN_REJECT_THRESHOLD - 1}\``,
                             result.filePath,
                             0
                         ),
