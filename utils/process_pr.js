@@ -90,16 +90,21 @@ async function check_pr_content(files) {
         // !!! ADD OTHER CHECKS BELOW THIS LINE !!!
         if (CONFIG.METHOD_LENGTHS)
             results.push(checkMethodLengths(file.contentString));
+        
         if (CONFIG.UNUSED_IMPORTS)
             results.push(checkUnusedImports(file.contentString, file.path));
+
         if (CONFIG.UNUSED_VARIABLES)
             results.push(checkUnusedVariables(file.contentString, file.path));
+
         if (CONFIG.INCORRECT_NAMING_CONVENTIONS)
             results.push(
                 checkIncorrectNamingConventions(file.contentString, file.path)
             );
+
         if (CONFIG.WILDCARD_IMPORTS)
             results.push(checkWildcardImports(file.contentString, file.path));
+
         if (CONFIG.CLASS_LENGTHS)
             results.push(checkClassLengths(file.contentString, file.path));
 
@@ -108,14 +113,17 @@ async function check_pr_content(files) {
             results.push(
                 await checkUnnecessaryNesting(file.contentString, file.path)
             );
+
         if (CONFIG.SQL_INJECTION)
             results.push(
                 await checkSqlInjection(file.contentString, file.path)
             );
+
         if (CONFIG.COMMENT_SMELLS)
             results.push(
                 await checkCommentSmells(file.contentString, file.path)
             );
+
         if (CONFIG.CODE_SHORTENING)
             results.push(
                 await checkCodeShortening(file.contentString, file.path)
